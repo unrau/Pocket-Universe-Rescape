@@ -1,6 +1,6 @@
 #
 # Pocket Universe: Rescape
-# v1.55
+# v1.56
 # A game written in Python for CodeSkulptor.
 # By Chloe Unrau 2013
 # _____________________________________________________________________________
@@ -763,15 +763,15 @@ story_info = ImageInfo([800, 600])
 story_image_0 = simplegui.load_image(
     "http://www.chloeunrau.com/stuff/rescape/images/splash.png")
 story_image_1 = simplegui.load_image (
-    "http://www.chloeunrau.com/stuff/rescape/images/story-1a.png")
+    "http://www.chloeunrau.com/stuff/rescape/images/story-1.png")
 story_image_2 = simplegui.load_image (
-    "http://www.chloeunrau.com/stuff/rescape/images/story-2a.png")
+    "http://www.chloeunrau.com/stuff/rescape/images/story-2.png")
 story_image_3 = simplegui.load_image (
-    "http://www.chloeunrau.com/stuff/rescape/images/story-3a.png")
+    "http://www.chloeunrau.com/stuff/rescape/images/story-3.png")
 story_image_4 = simplegui.load_image (
-    "http://www.chloeunrau.com/stuff/rescape/images/story-4a.png")
+    "http://www.chloeunrau.com/stuff/rescape/images/story-4.png")
 story_image_5 = simplegui.load_image (
-    "http://www.chloeunrau.com/stuff/rescape/images/story-5a.png")
+    "http://www.chloeunrau.com/stuff/rescape/images/story-5.png")
 story_image_list = [story_image_0, 
                     story_image_1, 
                     story_image_2, 
