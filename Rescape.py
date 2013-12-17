@@ -1,6 +1,6 @@
 #
 # Pocket Universe: Rescape
-# v1.58
+# v1.59
 # A game written in Python for CodeSkulptor.
 # By Chloe Unrau 2013
 # _____________________________________________________________________________
@@ -1355,7 +1355,7 @@ def main_handler():
                         explosion_sound)
                     game.add_explosion(explosion)
                     # chance to drop a hull-integrity power-up
-                    if random.randrange(0, 6) == 5:
+                    if random.randrange(0, 2) == 1:
                         powerup = Sprite(
                             'powerup', 
                             powerup_image, 
