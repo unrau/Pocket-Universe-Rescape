@@ -1,6 +1,6 @@
 #
 # Pocket Universe: Rescape
-# v1.56
+# v1.57
 # A game written in Python for CodeSkulptor.
 # By Chloe Unrau 2013
 # _____________________________________________________________________________
@@ -41,7 +41,7 @@ import random
 
 
 #
-# DEFINE GLOBAL VARIABLES
+# DEFINE CONSTANTS
 # _____________________________________________________________________________
 # _____________________________________________________________________________
 # _____________________________________________________________________________
@@ -53,70 +53,225 @@ HEIGHT = 600
 CENTRE = [WIDTH / 2, HEIGHT / 2]
 CTRL_WIDTH = 100
 
-# control
-total_score = 0
-story_board = 0
-game_is_paused = False
-first_time = True
-at_level_status = False
-in_play = False
-time = 0.5
-levels_remaining = 10
-anomoly_mass = 0
-rescued_this_turn = False
-beat_the_game = False
-num_dimensions = {}
-num_dimensions['x'] = 0
-num_dimensions['y'] = 0
-
 # game
-default_friction = 0.02
-friction = default_friction
-default_hull_integrity = 5
-hull_integrity = default_hull_integrity
-safe_spawn_distance = 200
-game_level = 0
-disruptor_speed = 12
-disruptor_lifespan = 10
-disruptor_max = 3
-teleporter_speed = 4
-teleporter_lifespan = 20
-teleporter_max = 1
-ship_acceleration = 0.2
-ship_turn_vel = 0.1
-max_asteroids = 5
-max_asteroid_speed = 30
-
-# sprites
-all_rocks = set([])
-all_disruptors = set([])
-all_explosions = set([])
-all_teleporters = set([])
-all_teleports = set([])
-remove_rocks = set([])
-remove_disruptors = set([])
-remove_teleporters = set([])
-remove_explosions = set([])
-remove_teleports = set([])
+SAFE_SPAWN_DISTANCE = 200
+DISRUPTOR_SPEED = 12
+DISRUPTOR_SPIN = 0.2
+DISRUPTOR_LIFESPAN = 10
+DISRUPTOR_MAX = 3
+TELEPORTER_SPEED = 4
+TELEPORTER_LIFESPAN = 20
+TELEPORTER_MAX = 1
+SHIP_ACCELERATION = 0.2
+SHIP_TURN_VEL = 0.1
+MAX_ASTEROIDS = 5
+MAX_ASTEROID_SPEED = 30
+DEFAULT_FRICTION = 0.02
+BEAT_LEVEL_FRICTION = 0.1
+DEFAULT_HULL_INTEGRITY = 5
 
 # timers
-rock_spawner_frequency = 1000
-main_eh_frequency = 60
-music_frequency = 9953
-victory_frequency = 14765
+ROCK_SPAWNER_FREQUENCY = 1000
+MAIN_EH_FREQUENCY = 60
+MUSIC_FREQUENCY = 9953
+VICTORY_FREQUENCY = 14765
 
 # user interface
-name_font = "monospace"
-name_size = 14
-name_colour = "#ffffff"
-ui_font = "monospace"
-ui_size = 12
-ui_colour = "#ffffff"
-ui_level_colour = "#73badb"
-status_font = "monospace"
-status_size = 24
-status_colour = "#ffffff"
-map_pos = [20, 51]
+NAME_FONT = "monospace"
+NAME_SIZE = 14
+NAME_COLOUR = "#ffffff"
+UI_FONT = "monospace"
+UI_SIZE = 12
+UI_COLOUR = "#ffffff"
+UI_LEVEL_COLOUR = "#73badb"
+STATUS_FONT = "monospace"
+STATUS_SIZE = 24
+STATUS_COLOUR = "#ffffff"
+MAP_POS = [20, 51]
+
+
+#
+# DEFINE AND INITIALISE GAME CONTROL VARIABLES
+# _____________________________________________________________________________
+# _____________________________________________________________________________
+# _____________________________________________________________________________
+
+
+class GameControl:
+    def __init__(self):
+        """ Define all game control variables. """
+
+        self.level = 0
+        self.time = 0.5
+        self.total_score = 0
+        self.story_board = 0
+        self.anomaly_mass = 0
+        self.levels_remaining = 10
+        self.num_dimensions = {}
+        self.num_dimensions['x'] = 0
+        self.num_dimensions['y'] = 0
+        self.rescued_this_turn = False
+        self.at_level_status = False
+        self.beat_the_game = False
+        self.first_time = True
+        self.is_paused = False
+        self.in_play = False
+        self.friction = DEFAULT_FRICTION
+        self.hull_integrity = DEFAULT_HULL_INTEGRITY
+        self.all_rocks = set([])
+        self.all_disruptors = set([])
+        self.all_explosions = set([])
+        self.all_teleporters = set([])
+        self.all_teleports = set([])
+        self.remove_rocks = set([])
+        self.remove_disruptors = set([])
+        self.remove_teleporters = set([])
+        self.remove_explosions = set([])
+        self.remove_teleports = set([])
+
+    def update_total_score(self, increment):
+        self.total_score += increment
+
+    def get_total_score(self):
+        return self.total_score
+
+    def reset_total_score(self):
+        self.total_score = 0
+
+    def update_story_board(self):
+        self.story_board += 1
+
+    def get_story_board(self):
+        return self.story_board
+
+    def set_paused(self, boolean):
+        self.is_paused = boolean
+
+    def update_first_time(self, boolean):
+        self.first_time = boolean
+
+    def update_level_status(self, boolean):
+        self.at_level_status = boolean
+
+    def update_in_play(self, boolean):
+        self.in_play = boolean
+
+    def update_time(self, increment):
+        self.time += increment
+
+    def get_time(self):
+        return self.time
+
+    def update_levels_remaining(self):
+        game.levels_remaining = 10 - game.get_level()
+
+    def set_levels_remaining(self, num):
+        self.levels_remaining = num
+
+    def reset_levels_remaining(self):
+        self.levels_remaining = 10
+
+    def get_levels_remaining(self):
+        return self.levels_remaining
+
+    def set_anomaly_mass(self, num):
+        self.anomaly_mass = num
+
+    def reduce_anomaly_mass(self, decrement):
+        self.anomaly_mass -= decrement
+
+    def get_anomaly_mass(self):
+        return self.anomaly_mass
+
+    def update_rescued_this_turn(self, boolean):
+        self.rescued_this_turn = boolean
+
+    def update_beat_the_game(self, boolean):
+        self.beat_the_game = boolean
+
+    def update_num_dimensions_x(self, num):
+        self.num_dimensions['x'] = num
+
+    def get_num_dimensions_x(self):
+        return self.num_dimensions['x']
+
+    def update_num_dimensions_y(self, num):
+        self.num_dimensions['y'] = num
+
+    def get_num_dimensions_y(self):
+        return self.num_dimensions['y']
+
+    def update_friction(self, num):
+        self.friction = num
+
+    def get_friction(self):
+        return self.friction
+
+    def update_hull_integrity(self, amount):
+        self.hull_integrity += amount
+
+    def set_hull_integrity(self, num):
+        self.hull_integrity = num
+
+    def get_hull_integrity(self):
+        return self.hull_integrity
+
+    def update_level(self, increment):
+        self.level += increment
+
+    def reset_level(self):
+        self.level = 0
+
+    def get_level(self):
+        return self.level
+
+    def add_rock(self, this_object):
+        self.all_rocks.add(this_object)
+
+    def add_disruptor(self, this_object):
+        self.all_disruptors.add(this_object)
+
+    def add_explosion(self, this_object):
+        self.all_explosions.add(this_object)
+
+    def add_teleporter(self, this_object):
+        self.all_teleporters.add(this_object)
+
+    def add_teleport(self, this_object):
+        self.all_teleports.add(this_object)
+
+    def remove_rock(self, this_object):
+        self.remove_rocks.add(this_object)
+
+    def remove_disruptor(self, this_object):
+        self.remove_disruptors.add(this_object)
+
+    def remove_explosion(self, this_object):
+        self.remove_explosions.add(this_object)
+
+    def remove_teleporter(self, this_object):
+        self.remove_teleporters.add(this_object)
+
+    def remove_teleport(self, this_object):
+        self.remove_teleports.add(this_object)
+
+    def reset_removal_sets(self):
+        self.remove_rocks = set([])
+        self.remove_disruptors = set([])
+        self.remove_teleporters = set([])
+        self.remove_explosions = set([])
+        self.remove_teleports = set([])
+
+    def remove_all_from_sets(self):
+        self.all_rocks.difference_update(self.remove_rocks)
+        self.all_disruptors.difference_update(self.remove_disruptors)
+        self.all_explosions.difference_update(self.remove_explosions)
+        self.all_teleporters.difference_update(self.remove_teleporters)
+        self.all_teleports.difference_update(self.remove_teleports)
+
+
+# initialise game control object        
+game = GameControl()
 
 
 #
@@ -144,136 +299,6 @@ def randrange_nozero(a, b):
     return _num
 
 
-def asteroid_collision(source):
-    """ Create a asteroid collision animation. """
-    explosion = Sprite(
-        'explosion', 
-        asteroid_crash_image, 
-        asteroid_crash_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        damage_sound)
-    all_explosions.add(explosion)
-
-
-def debris_collision(source):
-    """ Create a debris collision animation. """
-    explosion = Sprite(
-        'explosion', 
-        debris_crash_image, 
-        debris_crash_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        damage_sound)
-    all_explosions.add(explosion)
-
-
-def asteroid_explosion(source):
-    """ Create a asteroid explosion animation. """
-    explosion = Sprite(
-        'explosion', 
-        asteroid_explosion_image, 
-        asteroid_explosion_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        explosion_sound)
-    all_explosions.add(explosion)
-
-
-def debris_explosion(source):
-    """ Create a power-up and debris explosion animation. """
-    explosion = Sprite(
-        'explosion', 
-        debris_explosion_image, 
-        debris_explosion_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        explosion_sound)
-    all_explosions.add(explosion)
-    powerup = Sprite(
-        'powerup', 
-        powerup_image, 
-        powerup_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False)
-    all_rocks.add(powerup)
-
-
-def lifeform_explosion(source):
-    """ Create a lifeform explosion animation. """
-    explosion = Sprite(
-        'explosion', 
-        lifeform_explosion_image, 
-        lifeform_explosion_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        explosion_sound)
-    all_explosions.add(explosion)
-
-
-def asteroid_teleport(source):
-    """ Create an asteroid teleport animation. """
-    teleport = Sprite(
-        'teleport', 
-        asteroid_teleport_image, 
-        asteroid_teleport_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        teleport_sound)
-    all_teleports.add(teleport)
-
-
-def debris_teleport(source):
-    """ Create a debris teleport animation. """
-    teleport = Sprite(
-        'teleport', 
-        debris_teleport_image, 
-        debris_teleport_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        teleport_sound)
-    all_teleports.add(teleport)
-
-
-def lifeform_teleport(source):
-    """ Create a lifeform teleport animation. """
-    teleport = Sprite(
-        'teleport', 
-        lifeform_teleport_image, 
-        lifeform_teleport_info, 
-        source.get_pos(), 
-        source.get_vel(), 
-        source.get_angle(), 
-        source.get_angle_vel(), 
-        False, 
-        teleport_sound)
-    all_teleports.add(teleport)
-
-
 def clear_all_sprites(this_set):
     """ Remove all sprites in a given set. """
     remove_sprites = set([])
@@ -284,38 +309,37 @@ def clear_all_sprites(this_set):
 
 def clear_all_types():
     """ Remove all sprites from all sets. """
-    clear_all_sprites(all_disruptors)
-    clear_all_sprites(all_teleporters)
-    clear_all_sprites(all_rocks)
-    clear_all_sprites(all_explosions)
-    clear_all_sprites(all_teleports)
+    clear_all_sprites(game.all_disruptors)
+    clear_all_sprites(game.all_teleporters)
+    clear_all_sprites(game.all_rocks)
+    clear_all_sprites(game.all_explosions)
+    clear_all_sprites(game.all_teleports)
 
 
 def end_game(stop_play = True):
     """ Stop the game and reset variables. """
-    global in_play, rescued_this_turn, friction
-    my_ship.thrust = False
-    my_ship.is_right = False
-    my_ship.is_left = False
-    friction = 0.1
-    my_ship.angle_vel = 0
-    rescued_this_turn = False
-    my_map.found_mothership = False
+    my_ship.update_thrust(False)
+    my_ship.update_is_right(False)
+    my_ship.update_is_left(False)
+    game.update_friction(BEAT_LEVEL_FRICTION)
+    my_ship.set_angle_vel(0)
+    game.update_rescued_this_turn(False)
+    my_map.update_found_mothership(False)
     ship_thrust_sound.pause()
     ship_thrust_sound.rewind()
     clear_all_types()
     if stop_play:
-        in_play = False
+        game.update_in_play(False)
 
 
 def game_over():
     """ Display the Game Over splash screen and reset variables. """
-    global game_level, splash_image, game_is_paused, beat_the_game, total_score
-    game_level = 0
-    total_score = 0
+    global splash_image
+    game.reset_level()
+    game.reset_total_score()
     splash_image = splash_image_game_over
-    game_is_paused = True
-    beat_the_game = False
+    game.set_paused(True)
+    game.update_beat_the_game(False)
     die_sound.rewind()
     die_sound.play()
     game_over_sound.rewind()
@@ -324,25 +348,23 @@ def game_over():
 
 def new_game(dim, mass, play_now = True):
     """ Reset ship, mothership, variables, and create a new game and map. """
-    global my_map, my_ship, mothership, in_play, friction, game_is_paused
-    global anomoly_mass, splash_image, at_level_status, beat_the_game
-    global hull_integrity
+    global my_map, my_ship, mothership, splash_image
 
     if play_now:
-        in_play = True
-        beat_the_game = False
-        game_is_paused = False
-        at_level_status = False
+        game.update_in_play(True)
+        game.update_beat_the_game(False)
+        game.set_paused(False)
+        game.update_level_status(False)
         splash_image = splash_image_blank
-        friction = default_friction
-        if game_level == 1:
-            hull_integrity = default_hull_integrity
+        game.update_friction(DEFAULT_FRICTION)
+        if game.level == 1:
+            game.set_hull_integrity(DEFAULT_HULL_INTEGRITY)
 
-    anomoly_mass = mass
+    game.set_anomaly_mass(mass)
 
     # num_dimensions x and y must both be even numbers with a maximum of 20
-    num_dimensions['x'] = dim[0]
-    num_dimensions['y'] = dim[1]
+    game.update_num_dimensions_x(dim[0])
+    game.update_num_dimensions_y(dim[1])
 
     # create a new map of the size of the current pocket universe
     my_map = Map(map_info, map_tile_info)
@@ -355,7 +377,7 @@ def new_game(dim, mass, play_now = True):
         [WIDTH / 2, HEIGHT / 2], 
         [0, 0], 
         0, 
-        0.1, 
+        0, 
         True)
 
     # create a new ship
@@ -378,19 +400,20 @@ def new_game(dim, mass, play_now = True):
 
 def level_status():
     """ Display the Level Status screen. """
-    global game_is_paused, at_level_status, levels_remaining
-    global splash_image, beat_the_game, game_level
+    global splash_image
     end_game(False)
-    game_is_paused = True
-    levels_remaining = 10 - game_level
-    if game_level < 10 and not beat_the_game:
-        at_level_status = True
+    game.set_paused(True)
+    game.update_levels_remaining()
+    if game.level < 10 and not game.beat_the_game:
+        # display the normal level status screen
+        game.update_level_status(True)
         splash_image = splash_image_level_status
         level_complete_sound.rewind()
         level_complete_sound.play()
     else:
-        beat_the_game = True
-        game_level = 0
+        # display the beat-game status screen
+        game.update_beat_the_game(True)
+        game.reset_level()
         splash_image = splash_image_beat_game
         beat_game_sound.rewind()
         beat_game_sound.play()
@@ -402,33 +425,40 @@ def level_status():
 
 def start_next_level():
     """ Prepare and start the next level. """
-    global game_level, nebula_image, levels_remaining
-    nebula_image = nebula_list[game_level]
+    global nebula_image
+    nebula_image = nebula_list[game.get_level()]
     transmission_2.pause()
-    game_level += 1
-    if game_level == 1:
-        levels_remaining = 10
-    new_game([game_level*2, game_level*2], game_level*100)
+    game.update_level(1)
+    if game.level == 1:
+        game.reset_levels_remaining()
+    new_game(
+        [game.get_level() * 2, game.get_level() * 2], 
+        game.get_level() * 100)
     level_start_sound.rewind()
     level_start_sound.play()
 
 
 def next_story_board():
     """ Display the next story board screen. """
-    global first_time, story_board, story_image
-    story_board += 1
-    if story_board > 5:
-        first_time = False
+    global story_image
+    game.update_story_board()
+    if game.story_board > 5:
+        game.update_first_time(False)
         start_next_level()
     else:
-        if story_board == 1:
+        if game.story_board == 1:
             transmission_1.rewind()
             transmission_1.play()
         else:
             transmission_1.pause()
             transmission_2.rewind()
             transmission_2.play()
-        story_image = story_image_list[story_board]
+        story_image = story_image_list[game.get_story_board()]
+
+
+def misfire():
+    misfire_sound.rewind()
+    misfire_sound.play()
 
 
 def play_music():
@@ -452,7 +482,7 @@ class ImageInfo:
     def __init__(
         self, size, radius = 0, lifespan = None, animated = False):
         self.size = size
-        self.centre = [self.size[0] / 2, self.size[1] / 2]
+        self.centre = [size[0] / 2, size[1] / 2]
         self.radius = radius
         if lifespan:
             self.lifespan = lifespan
@@ -496,7 +526,6 @@ class Sprite:
         self.radius = info.get_radius()
         self.lifespan = info.get_lifespan()
         self.animated = info.get_animated()
-        self.age = 0
         self.life = 0
         self.dim_coord = [0, 0]
         self.score = 0
@@ -506,78 +535,93 @@ class Sprite:
             sound.rewind()
             sound.play()
 
-    def fire_missile(self, missile_kind):
-
+    def get_nose_pos(self):
+        """ Calculate the current position of this sprite's nose. """
         # calculate the position of the ship's nose
-        nose_pos = [self.radius * math.cos(self.angle) + self.pos[0],
-                    self.radius * math.sin(self.angle) + self.pos[1]]
+        return [(self.get_radius() * 
+                 math.cos(self.get_angle()) + 
+                 self.get_pos()[0]),
+                (self.get_radius() * 
+                 math.sin(self.get_angle()) + 
+                 self.get_pos()[1])]
 
-        # fire a missile of a certain type
+    def get_missile_vel(self, kind):
+        # set missile velocity based on ship direction and velocity
+        if kind == 'disruptor':
+            return [((angle_to_vector(self.get_angle())[0] * DISRUPTOR_SPEED) 
+                      + self.get_vel()[0]), 
+                    ((angle_to_vector(self.get_angle())[1] * DISRUPTOR_SPEED) 
+                      + self.get_vel()[1])]
+        elif kind == 'teleporter':
+            return [((angle_to_vector(self.get_angle())[0] * TELEPORTER_SPEED) 
+                      + self.get_vel()[0]), 
+                    ((angle_to_vector(self.get_angle())[1] * TELEPORTER_SPEED) 
+                      + self.get_vel()[1])]
+
+    def fire_missile(self, missile_kind):
+        """ Fire a missile of a given kind. """
 
         if missile_kind == 'disruptor':
-
-            # set missile velocity based on ship direction and velocity
-            this_vel = [
-                ((angle_to_vector(self.angle)[0] * disruptor_speed) 
-                    + self.vel[0]), 
-                ((angle_to_vector(self.angle)[1] * disruptor_speed) 
-                    + self.vel[1])]
-
             # create a new disruptor missile
-            if len(all_disruptors) < disruptor_max:
+            if len(game.all_disruptors) < DISRUPTOR_MAX:
                 disruptor = Sprite(
                     'disruptor', 
                     disruptor_image, 
                     disruptor_info, 
-                    nose_pos, 
-                    this_vel, 
-                    my_ship.angle, 
+                    self.get_nose_pos(), 
+                    self.get_missile_vel('disruptor'), 
+                    self.get_angle(), 
                     0, 
                     False, 
                     disruptor_sound)
                 # add new missile to the game
-                all_disruptors.add(disruptor)
+                game.add_disruptor(disruptor)
             else:
                 # misfire if maximum disruptor shots are in play
-                misfire_sound.rewind()
-                misfire_sound.play()
+                misfire()
 
-        if missile_kind == 'teleporter':
-
-            # set missile velocity based on ship direction and velocity
-            this_vel = [
-                ((angle_to_vector(self.angle)[0] * teleporter_speed) 
-                    + self.vel[0]), 
-                ((angle_to_vector(self.angle)[1] * teleporter_speed) 
-                    + self.vel[1])]
-
+        elif missile_kind == 'teleporter':
             # create a new teleporter missile
-            if len(all_teleporters) < teleporter_max:
+            if len(game.all_teleporters) < TELEPORTER_MAX:
                 teleporter = Sprite(
                     'teleporter', 
                     teleporter_image, 
                     teleporter_info, 
-                    nose_pos, 
-                    this_vel, 
-                    0, 
-                    0.2, 
+                    self.get_nose_pos(), 
+                    self.get_missile_vel('teleporter'), 
+                    self.get_angle(), 
+                    DISRUPTOR_SPIN, 
                     False,
                     teleporter_sound)
                 # add new teleportens to the game
-                all_teleporters.add(teleporter)
+                game.add_teleporter(teleporter)
             else:
                 # misfire if maximum teleporter shots are in play
-                misfire_sound.rewind()
-                misfire_sound.play()
+                misfire()
+
+    def get_kind(self):
+        return self.kind
+
+    def get_radius(self):
+        return self.radius
 
     def get_pos(self):
         return self.pos
 
+    def get_dim_coord(self):
+        return self.dim_coord
+
     def get_vel(self):
         return self.vel
 
+    def get_forward_vel(self):
+        return self.forward_vel
+
     def get_angle(self):
         return self.angle
+
+    def set_angle_vel(self, num):
+        self.angle_vel = num
 
     def get_angle_vel(self):
         return self.angle_vel
@@ -585,71 +629,111 @@ class Sprite:
     def get_dim_coord(self):
         return self.dim_coord
 
+    def get_image_centre(self):
+        return self.image_centre
+
+    def get_image_size(self):
+        return self.image_size
+
+    def update_pos_changed(self, boolean):
+        self.pos_changed = boolean
+
+    def update_centre_x(self, amount):
+        self.image_centre[0] += amount
+
+    def update_thrust(self, boolean):
+        self.thrust = boolean
+
+    def update_is_left(self, boolean):
+        self.is_left = boolean
+
+    def update_is_right(self, boolean):
+        self.is_right = boolean
+
+    def update_at_mothership(self, boolean):
+        self.at_mothership = boolean
+
+    def update_life(self, increment):
+        self.life += increment
+
+    def update_score(self, increment):
+        self.score += increment
+
+    def get_score(self):
+        return self.score
+
+    def update_life_forms(self, amount):
+        self.life_forms += amount
+
+    def get_life_forms(self):
+        return self.life_forms
+
     def relocate(self, random_dim = True, x = 0, y = 0):
         """ Move this sprite to a random dimentional coordinate. """
         if random_dim:
             # relocate sprite to random dim-coords within current dimension
-            x = random.randrange(0, num_dimensions['x'])
-            y = random.randrange(0, num_dimensions['y'])
+            x = random.randrange(0, game.get_num_dimensions_x())
+            y = random.randrange(0, game.get_num_dimensions_y())
         self.dim_coord[0] = x
         self.dim_coord[1] = y
-        my_map.update_tile(self.kind)
+        my_map.update_tile(self.get_kind())
         self.update()
 
     def collide(self, this_sprite):
-        """ Return true if this sprite collides with given sprite. """
-        if dist(this_sprite.pos, self.pos) < this_sprite.radius + self.radius:
+        """ Return true if this sprite collides with a given sprite. """
+        if (dist(this_sprite.get_pos(), self.get_pos()) < 
+            this_sprite.get_radius() + self.get_radius()):
             return True
 
     def step_animate(self):
         """ Set the image of this sprite to the next animation frame. """
-        self.image_centre[0] += self.image_size[0]
+        self.image_centre[0] += self.get_image_size()[0]
     
     def update(self):
         """ Update this sprite (called from the draw handler). """
         if self.kind == 'ship':
 
             # update directional velocity
-            self.forward_vel = [angle_to_vector(self.angle)[0], 
-                                angle_to_vector(self.angle)[1]]
+            self.forward_vel[0] = angle_to_vector(self.get_angle())[0]
+            self.forward_vel[1] = angle_to_vector(self.get_angle())[1]
 
             # update volocity as per thrust
             if self.thrust:
-                self.vel[0] += self.forward_vel[0] * ship_acceleration
-                self.vel[1] += self.forward_vel[1] * ship_acceleration
+                self.vel[0] += self.get_forward_vel()[0] * SHIP_ACCELERATION
+                self.vel[1] += self.get_forward_vel()[1] * SHIP_ACCELERATION
 
             # update velocity as per friction
-            self.vel[0] *= (1 - friction)
-            self.vel[1] *= (1 - friction)
+            self.vel[0] *= (1 - game.get_friction())
+            self.vel[1] *= (1 - game.get_friction())
 
         # update direction
-        self.angle += self.angle_vel
+        self.angle += self.get_angle_vel()
 
         # update position
-        self.pos[0] = (self.pos[0] + self.vel[0])
-        self.pos[1] = (self.pos[1] + self.vel[1])
+        self.pos[0] += self.get_vel()[0]
+        self.pos[1] += self.get_vel()[1]
 
         # update dimensional coordinates
         if self.pos[0] < 0:
             self.dim_coord[0] -= 1
-            self.dim_coord[0] %= num_dimensions['x']
-            self.pos_changed = True
+            self.dim_coord[0] %= game.get_num_dimensions_x()
+            self.update_pos_changed(True)
         if self.pos[0] > WIDTH:
             self.dim_coord[0] += 1
-            self.dim_coord[0] %= num_dimensions['x']
-            self.pos_changed = True
+            self.dim_coord[0] %= game.get_num_dimensions_x()
+            self.update_pos_changed(True)
         if self.pos[1] < 0:
             self.dim_coord[1] -= 1
-            self.dim_coord[1] %= num_dimensions['y']
-            self.pos_changed = True
+            self.dim_coord[1] %= game.get_num_dimensions_y()
+            self.update_pos_changed(True)
         if self.pos[1] > HEIGHT:
             self.dim_coord[1] += 1
-            self.dim_coord[1] %= num_dimensions['y']
-            self.pos_changed = True
+            self.dim_coord[1] %= game.get_num_dimensions_y()
+            self.update_pos_changed(True)
 
         if self.pos_changed:
-            my_map.update_tile(self.kind)
-            self.pos_changed = False
+            my_map.update_tile(self.get_kind())
+            self.update_pos_changed(False)
 
         # wrap position
         self.pos[0] %= WIDTH
@@ -659,18 +743,18 @@ class Sprite:
         """ Draw this sprite. """
         canvas.draw_image(
             self.image, 
-            self.image_centre, 
-            self.image_size, 
-            self.pos, 
-            self.image_size,
-            self.angle)
+            self.get_image_centre(), 
+            self.get_image_size(), 
+            self.get_pos(), 
+            self.get_image_size(),
+            self.get_angle())
         if self.lighting:
             canvas.draw_image(
                 lighting_image, 
                 lighting_info.get_centre(), 
                 lighting_info.get_size(), 
-                self.pos, 
-                self.image_size,
+                self.get_pos(), 
+                self.get_image_size(),
                 0)
 
 
@@ -687,25 +771,52 @@ class Map:
         self.my_ship_pos = [0, 0]
         # set the size of the map based on num_dimensions + 1px to show border
         self.grid_size = [
-            num_dimensions['x'] * map_tile_info.get_size()[0] + 1, 
-            num_dimensions['y'] * map_tile_info.get_size()[1] + 1]
-        # re-position the map based on the grid size (and magic numbers >_<)
-        self.pos = list(map_pos)
-        self.pos[0] += self.grid_size[0] / 2 + self.grid_offset
-        self.pos[1] += self.grid_size[1] / 2 + self.grid_offset
+            game.get_num_dimensions_x() * map_tile_info.get_size()[0] + 1, 
+            game.get_num_dimensions_y() * map_tile_info.get_size()[1] + 1]
+        # re-position the map based on the grid size
+        self.pos = list(MAP_POS)
+        self.pos[0] += self.get_grid_size()[0] / 2 + self.get_grid_offset()
+        self.pos[1] += self.get_grid_size()[1] / 2 + self.get_grid_offset()
 
     def update_tile(self, tile):
         """ Update the ship and mothership map markers. """
         if tile == 'mothership':
-            self.mothership_pos[0] = map_pos[0] + (
-                map_tile_info.get_size()[0] * mothership.dim_coord[0])
-            self.mothership_pos[1] = map_pos[1] + (
-                map_tile_info.get_size()[1] * mothership.dim_coord[1])
+            self.mothership_pos[0] = MAP_POS[0] + (
+                map_tile_info.get_size()[0] * mothership.get_dim_coord()[0])
+            self.mothership_pos[1] = MAP_POS[1] + (
+                map_tile_info.get_size()[1] * mothership.get_dim_coord()[1])
         if tile == 'ship':
-            self.my_ship_pos[0] = map_pos[0] + (
-                map_tile_info.get_size()[0] * my_ship.dim_coord[0])
-            self.my_ship_pos[1] = map_pos[1] + (
-                map_tile_info.get_size()[1] * my_ship.dim_coord[1])
+            self.my_ship_pos[0] = MAP_POS[0] + (
+                map_tile_info.get_size()[0] * my_ship.get_dim_coord()[0])
+            self.my_ship_pos[1] = MAP_POS[1] + (
+                map_tile_info.get_size()[1] * my_ship.get_dim_coord()[1])
+
+    def get_grid_size(self):
+        return self.grid_size
+
+    def get_grid_offset(self):
+        return self.grid_offset
+
+    def get_found_mothership(self):
+        return self.found_mothership
+
+    def update_found_mothership(self, boolean):
+        self.found_mothership = boolean
+
+    def get_centre(self):
+        return self.centre
+
+    def get_grid_size(self):
+        return self.grid_size
+
+    def get_pos(self):
+        return self.pos
+
+    def get_mothership_pos(self):
+        return self.mothership_pos
+
+    def get_my_ship_pos(self):
+        return self.my_ship_pos
 
     def draw(self, canvas):
         """ Draw this map. """
@@ -713,10 +824,10 @@ class Map:
         # draw the map
         canvas.draw_image(
             map_image, 
-            self.centre, 
-            self.grid_size, 
-            self.pos, 
-            self.grid_size, 
+            self.get_centre(), 
+            self.get_grid_size(), 
+            self.get_pos(), 
+            self.get_grid_size(), 
             0)
 
         # draw the mothership tile
@@ -725,7 +836,7 @@ class Map:
                 map_tile_mothership, 
                 map_tile_info.get_centre(), 
                 map_tile_info.get_size(), 
-                self.mothership_pos, 
+                self.get_mothership_pos(), 
                 map_tile_info.get_size(), 
                 0)
 
@@ -734,7 +845,7 @@ class Map:
             map_tile_ship, 
             map_tile_info.get_centre(), 
             map_tile_info.get_size(), 
-            self.my_ship_pos, 
+            self.get_my_ship_pos(), 
             map_tile_info.get_size(), 
             0)
 
@@ -841,11 +952,11 @@ mothership_high_info = ImageInfo([800, 600])
 mothership_high_image = simplegui.load_image(
     "http://www.chloeunrau.com/stuff/rescape/images/mothership-high.png")
 
-disruptor_info = ImageInfo([10, 10], 3, disruptor_lifespan)
+disruptor_info = ImageInfo([10, 10], 3, DISRUPTOR_LIFESPAN)
 disruptor_image = simplegui.load_image(
     "http://www.chloeunrau.com/stuff/rescape/images/disruptor.png")
 
-teleporter_info = ImageInfo([10, 10], 3, teleporter_lifespan)
+teleporter_info = ImageInfo([10, 10], 3, TELEPORTER_LIFESPAN)
 teleporter_image = simplegui.load_image(
     "http://www.chloeunrau.com/stuff/rescape/images/teleporter.png")
 
@@ -1000,18 +1111,18 @@ transmission_2.set_volume(1)
 def rock_spawner():
     """ A timer handler that spawns asteroids, debris, and lifeforms. """
 
-    if (in_play and 
+    if (game.in_play and 
         not my_ship.at_mothership and 
-        len(all_rocks) < max_asteroids):
+        len(game.all_rocks) < MAX_ASTEROIDS):
 
         random_pos = [random.randrange(0, WIDTH), random.randrange(0, HEIGHT)]
         random_vel = [
-        randrange_nozero(-max_asteroid_speed, max_asteroid_speed + 1) / 10.0, 
-        randrange_nozero(-max_asteroid_speed, max_asteroid_speed + 1) / 10.0]
+        randrange_nozero(-MAX_ASTEROID_SPEED, MAX_ASTEROID_SPEED + 1) / 10.0, 
+        randrange_nozero(-MAX_ASTEROID_SPEED, MAX_ASTEROID_SPEED + 1) / 10.0]
         random_ang_vel = randrange_nozero(-20, 20) / 100.0
         random_rock = random.randrange(0, 7)
 
-        if dist(my_ship.pos, random_pos) > safe_spawn_distance:
+        if dist(my_ship.get_pos(), random_pos) > SAFE_SPAWN_DISTANCE:
             if random_rock  <= 3:
                 asteroid = Sprite(
                     'asteroid', 
@@ -1022,7 +1133,7 @@ def rock_spawner():
                     0, 
                     random_ang_vel, 
                     False)
-                all_rocks.add(asteroid)
+                game.add_rock(asteroid)
             elif random_rock == 4:
                 debris = Sprite(
                     'debris', 
@@ -1033,7 +1144,7 @@ def rock_spawner():
                     0, 
                     random_ang_vel, 
                     False)
-                all_rocks.add(debris)
+                game.add_rock(debris)
             else:
                 lifeform = Sprite(
                     'lifeform', 
@@ -1044,44 +1155,43 @@ def rock_spawner():
                     0, 
                     random_ang_vel, 
                     False)
-                all_rocks.add(lifeform)
+                game.add_rock(lifeform)
 
 
 def keydown(key):
-    global first_time, game_is_paused
 
     def _dir_right(ship):
         if ship.is_left:
-            ship.angle_vel = 0
+            ship.set_angle_vel(0)
         else:
-            ship.angle_vel = ship_turn_vel
-        ship.is_right = True
+            ship.set_angle_vel(SHIP_TURN_VEL)
+        ship.update_is_right(True)
 
     def _dir_left(ship):
         if ship.is_right:
-            ship.angle_vel = 0
+            ship.set_angle_vel(0)
         else:
-            ship.angle_vel = -ship_turn_vel
-        ship.is_left = True
+            ship.set_angle_vel(-SHIP_TURN_VEL)
+        ship.update_is_left(True)
 
     # splash screen controls
-    if first_time and key == 32:
+    if game.first_time and key == 32:
         next_story_board()
-    elif game_is_paused and key == 32:
+    elif game.is_paused and key == 32:
         start_next_level()
 
     # my_ship controls
-    if in_play and key == 37:
+    if game.in_play and key == 37:
         _dir_left(my_ship)
-    if in_play and key == 39:
+    if game.in_play and key == 39:
         _dir_right(my_ship)
-    if in_play and key == 49 and not my_ship.at_mothership:
+    if game.in_play and key == 49 and not my_ship.at_mothership:
         my_ship.fire_missile('disruptor')
-    if in_play and key == 50 and not my_ship.at_mothership:
+    if game.in_play and key == 50 and not my_ship.at_mothership:
         my_ship.fire_missile('teleporter')
-    if in_play and key == 38:
-        my_ship.thrust = True
-        my_ship.image_centre[0] += ship_info.size[0]
+    if game.in_play and key == 38:
+        my_ship.update_thrust(True)
+        my_ship.update_centre_x(ship_info.get_size()[0])
         ship_thrust_sound.rewind()
         ship_thrust_sound.play()
 
@@ -1090,187 +1200,276 @@ def keyup(key):
 
     def _dir_right(ship):
         if ship.is_left:
-            ship.angle_vel = -ship_turn_vel
+            ship.set_angle_vel(-SHIP_TURN_VEL)
         else:
-            ship.angle_vel = 0
-        ship.is_right = False
+            ship.set_angle_vel(0)
+        ship.update_is_right(False)
 
     def _dir_left(ship):
         if ship.is_right:
-            ship.angle_vel = ship_turn_vel
+            ship.set_angle_vel(SHIP_TURN_VEL)
         else:
-            ship.angle_vel = 0
-        ship.is_left = False
+            ship.set_angle_vel(0)
+        ship.update_is_left(False)
 
     # my_ship controls
-    if in_play and key == 37:
+    if game.in_play and key == 37:
         _dir_left(my_ship)
-    if in_play and key == 39:
+    if game.in_play and key == 39:
         _dir_right(my_ship)
-    if in_play and key == 38:
-        my_ship.thrust = False
-        my_ship.image_centre[0] -= ship_info.size[0]
+    if game.in_play and key == 38:
+        my_ship.update_thrust(False)
+        my_ship.update_centre_x(-ship_info.get_size()[0])
         ship_thrust_sound.pause()
 
 
 def mouse_click(position):
     # splash screen controls
-    if first_time:
+    if game.first_time:
         next_story_board()
-    elif game_is_paused:
+    elif game.is_paused:
         start_next_level()
 
 
 def main_handler():
     """ Timed checks that need not be checked as often as the draw handler. """
-    global rescued_this_turn, anomoly_mass, total_score, hull_integrity
 
     # check if the user has died
-    if hull_integrity <= 0 and not game_is_paused:
+    if game.hull_integrity <= 0 and not game.is_paused:
         end_game()
         game_over()
 
     # check if the user has passed a level
-    if anomoly_mass <= 0:
+    if game.anomaly_mass <= 0:
         end_game()
-        if not at_level_status:
+        if not game.at_level_status:
             level_status()
 
     # check if my_ship is at the mothership dimension
     if my_ship.dim_coord == mothership.dim_coord:
-        my_ship.at_mothership = True
-        my_map.found_mothership = True
+        my_ship.update_at_mothership(True)
+        my_map.update_found_mothership(True)
         clear_all_types()
     else:
-        my_ship.at_mothership = False
+        my_ship.update_at_mothership(False)
 
     # update the score values if ship is inside the mothership teleport circle
     if (my_ship.at_mothership and 
-        dist(CENTRE, my_ship.pos) <= 50 and 
+        dist(CENTRE, my_ship.get_pos()) <= 50 and 
         my_ship.life_forms > 0):
-        rescued_this_turn = True
-        my_ship.life_forms -= 1
-        my_ship.score += 1
+        game.update_rescued_this_turn(True)
+        my_ship.update_life_forms(-1)
+        my_ship.update_score(1)
         score_sound.rewind()
         score_sound.play()
-        total_score += 1
-        anomoly_mass -= 10
-        if anomoly_mass < 0:
-            anomoly_mass = 0
+        game.update_total_score(1)
+        game.reduce_anomaly_mass(10)
+        if game.anomaly_mass < 0:
+            game.set_anomaly_mass(0)
 
     # relocate the mothership if lifeforms have been rescued
     elif (my_ship.at_mothership and 
-          dist(CENTRE, my_ship.pos) > 50 and 
-          rescued_this_turn):
+          dist(CENTRE, my_ship.get_pos()) > 50 and 
+          game.rescued_this_turn):
         while my_ship.dim_coord == mothership.dim_coord:
             mothership.relocate()
-        my_map.found_mothership = False
-        rescued_this_turn = False
+        my_map.update_found_mothership(False)
+        game.update_rescued_this_turn(False)
 
     # prepare tags for sprite removal
-    remove_rocks = set([])
-    remove_disruptors = set([])
-    remove_teleporters = set([])
-    remove_explosions = set([])
-    remove_teleports = set([])
+    game.reset_removal_sets()
 
-    # destroy all rocks hit by ship
-    for rock in all_rocks:
+    # destroy all rocks hit by the ship
+    for rock in game.all_rocks:
         if my_ship.collide(rock):
             if rock.kind == 'asteroid':
-                hull_integrity -= 1
-                remove_rocks.add(rock)
-                asteroid_collision(rock)
+                game.update_hull_integrity(-1)
+                game.remove_rock(rock)
+                # create an asteroid collision animation
+                explosion = Sprite(
+                    'explosion', 
+                    asteroid_crash_image, 
+                    asteroid_crash_info, 
+                    rock.get_pos(), 
+                    rock.get_vel(), 
+                    rock.get_angle(), 
+                    rock.get_angle_vel(), 
+                    False, 
+                    damage_sound)
+                game.add_explosion(explosion)
             elif rock.kind == 'debris':
-                hull_integrity -= 1
-                remove_rocks.add(rock)
-                debris_collision(rock)
+                game.update_hull_integrity(-1)
+                game.remove_rock(rock)
+                # create a debris collision animation
+                explosion = Sprite(
+                    'explosion', 
+                    debris_crash_image, 
+                    debris_crash_info, 
+                    rock.get_pos(), 
+                    rock.get_vel(), 
+                    rock.get_angle(), 
+                    rock.get_angle_vel(), 
+                    False, 
+                    damage_sound)
+                game.add_explosion(explosion)
             elif rock.kind == 'powerup':
-                hull_integrity += 1
+                game.update_hull_integrity(1)
                 powerup_sound.rewind()
                 powerup_sound.play()
-                remove_rocks.add(rock)
+                game.remove_rock(rock)
             elif rock.kind == 'lifeform':
                 # life forms do not collide with the ship
                 pass
 
     # destroy all rocks hit by disruptors
-    for rock in all_rocks:
-        for disruptor in all_disruptors:
+    for rock in game.all_rocks:
+        for disruptor in game.all_disruptors:
             if rock.collide(disruptor) and rock.kind != 'powerup':
-                remove_rocks.add(rock)
-                remove_disruptors.add(disruptor)
-                anomoly_mass -= 1
+                game.remove_rock(rock)
+                game.remove_disruptor(disruptor)
+                game.reduce_anomaly_mass(1)
                 if rock.kind == 'asteroid':
-                    asteroid_explosion(rock)
+                    # create an asteroid explosion animation
+                    explosion = Sprite(
+                        'explosion', 
+                        asteroid_explosion_image, 
+                        asteroid_explosion_info, 
+                        rock.get_pos(), 
+                        rock.get_vel(), 
+                        rock.get_angle(), 
+                        rock.get_angle_vel(), 
+                        False, 
+                        explosion_sound)
+                    game.add_explosion(explosion)
                 elif rock.kind == 'debris':
-                    debris_explosion(rock)
+                    # create a debris explosion animation
+                    explosion = Sprite(
+                        'explosion', 
+                        debris_explosion_image, 
+                        debris_explosion_info, 
+                        rock.get_pos(), 
+                        rock.get_vel(), 
+                        rock.get_angle(), 
+                        rock.get_angle_vel(), 
+                        False, 
+                        explosion_sound)
+                    game.add_explosion(explosion)
+                    # create a hull-integrity power-up
+                    powerup = Sprite(
+                        'powerup', 
+                        powerup_image, 
+                        powerup_info, 
+                        rock.get_pos(), 
+                        rock.get_vel(), 
+                        rock.get_angle(), 
+                        rock.get_angle_vel(), 
+                        False)
+                    game.add_rock(powerup)
                 elif rock.kind == 'lifeform':
-                    lifeform_explosion(rock)
+                    # create a lifeform explosion animation
+                    explosion = Sprite(
+                        'explosion', 
+                        lifeform_explosion_image, 
+                        lifeform_explosion_info, 
+                        rock.get_pos(), 
+                        rock.get_vel(), 
+                        rock.get_angle(), 
+                        rock.get_angle_vel(), 
+                        False, 
+                        explosion_sound)
+                    game.add_explosion(explosion)
 
-    # transport all rocks hit by teleporter missiles
-    for rock in all_rocks:
-        for teleporter in all_teleporters:
+    # teleport all rocks hit by teleporters
+    for rock in game.all_rocks:
+        for teleporter in game.all_teleporters:
             if teleporter.collide(rock) and rock.kind != 'powerup':
-                remove_rocks.add(rock)
-                remove_teleporters.add(teleporter)
+                game.remove_rock(rock)
+                game.remove_teleporter(teleporter)
                 if rock.kind == 'asteroid':
                     # teleporting an asteroid kills all life forms on the ship
                     if my_ship.life_forms > 0:
                         lifeform_death_sound.rewind()
                         lifeform_death_sound.play()
                     my_ship.life_forms = 0
-                    asteroid_teleport(rock)
+                    # create an asteroid teleport animation
+                    teleport = Sprite(
+                        'teleport', 
+                        asteroid_teleport_image, 
+                        asteroid_teleport_info, 
+                        rock.get_pos(), 
+                        rock.get_vel(), 
+                        rock.get_angle(), 
+                        rock.get_angle_vel(), 
+                        False, 
+                        teleport_sound)
+                    game.add_teleport(teleport)
                 elif rock.kind == 'debris':
                     # 10% chance that teleporting spaceship debris will reveal
                     # the location of the mothership.
                     if random.randrange(0, 11) == 10:
-                        my_map.found_mothership = True
-                    debris_teleport(rock)
+                        my_map.update_found_mothership(True)
+                    # create a debris teleport animation
+                    teleport = Sprite(
+                        'teleport', 
+                        debris_teleport_image, 
+                        debris_teleport_info, 
+                        rock.get_pos(), 
+                        rock.get_vel(), 
+                        rock.get_angle(), 
+                        rock.get_angle_vel(), 
+                        False, 
+                        teleport_sound)
+                    game.add_teleport(teleport)
                 elif rock.kind == 'lifeform':
                     # teleport one life form onto the ship
-                    my_ship.life_forms += 1
-                    lifeform_teleport(rock)
+                    my_ship.update_life_forms(1)
+                    # create a lifeform teleport animation
+                    teleport = Sprite(
+                        'teleport', 
+                        lifeform_teleport_image, 
+                        lifeform_teleport_info, 
+                        rock.get_pos(), 
+                        rock.get_vel(), 
+                        rock.get_angle(), 
+                        rock.get_angle_vel(), 
+                        False, 
+                        teleport_sound)
+                    game.add_teleport(teleport)
 
     # control the lifespan of explosions
-    for explosion in all_explosions:
-        explosion.life += 1
+    for explosion in game.all_explosions:
+        explosion.update_life(1)
         if explosion.life >= explosion.lifespan:
-            remove_explosions.add(explosion)
+            game.remove_explosion(explosion)
 
     # control the lifespan of teleports
-    for teleport in all_teleports:
-        teleport.life += 1
+    for teleport in game.all_teleports:
+        teleport.update_life(1)
         if teleport.life >= teleport.lifespan:
-            remove_teleports.add(teleport)
+            game.remove_teleport(teleport)
 
     # control the lifespan of all disruptor missiles
-    for disruptor in all_disruptors:
-        disruptor.life += 1
+    for disruptor in game.all_disruptors:
+        disruptor.update_life(1)
         if disruptor.life >= disruptor.lifespan:
-            remove_disruptors.add(disruptor)
+            game.remove_disruptor(disruptor)
 
     # control the lifespan of teleporter missiles
-    for teleporter in all_teleporters:
-        teleporter.life += 1
+    for teleporter in game.all_teleporters:
+        teleporter.update_life(1)
         if teleporter.life >= teleporter.lifespan:
-            remove_teleporters.add(teleporter)
+            game.remove_teleporter(teleporter)
 
     # remove tagged sprites
-    all_rocks.difference_update(remove_rocks)
-    all_disruptors.difference_update(remove_disruptors)
-    all_explosions.difference_update(remove_explosions)
-    all_teleporters.difference_update(remove_teleporters)
-    all_teleports.difference_update(remove_teleports)
+    game.remove_all_from_sets()
 
 
 def draw(canvas):
     """ CodeSkulptor draw handler. """
-    global time, levels_remaining
     
     # draw animated background
-    time += 1
-    wtime = (time / 4) % WIDTH
+    game.update_time(1)
+    wtime = (game.get_time() / 4) % WIDTH
     centre = grid_info.get_centre()
     size = grid_info.get_size()
     canvas.draw_image(
@@ -1293,9 +1492,9 @@ def draw(canvas):
         (WIDTH, HEIGHT))
 
     # control the animation of explosions and teleports
-    for explosion in all_explosions:
+    for explosion in game.all_explosions:
         explosion.step_animate()
-    for teleport in all_teleports:
+    for teleport in game.all_teleports:
         teleport.step_animate()
 
     # draw the lower mothership
@@ -1308,34 +1507,34 @@ def draw(canvas):
             mothership_low_info.get_size())
 
     # update and draw the ship
-    if hull_integrity > 0:
+    if game.hull_integrity > 0:
         my_ship.update()
         my_ship.draw(canvas)
     else:
         end_game()
 
     # update and draw the asteroids
-    for rock in all_rocks:
+    for rock in game.all_rocks:
         rock.update()
         rock.draw(canvas)
 
     # update and draw all disruptors
-    for disruptor in all_disruptors:
+    for disruptor in game.all_disruptors:
         disruptor.update()
         disruptor.draw(canvas)
 
     # update and draw all teleporters
-    for teleporter in all_teleporters:
+    for teleporter in game.all_teleporters:
         teleporter.update()
         teleporter.draw(canvas)
 
     # update and draw all explosions
-    for explosion in all_explosions:
+    for explosion in game.all_explosions:
         explosion.update()
         explosion.draw(canvas)
 
     # update and draw all teleports
-    for teleport in all_teleports:
+    for teleport in game.all_teleports:
         teleport.update()
         teleport.draw(canvas)
 
@@ -1362,43 +1561,43 @@ def draw(canvas):
         [WIDTH / 2, HEIGHT - (interface_bottom_info.get_size()[1] / 2)], 
         interface_bottom_info.get_size())
     canvas.draw_text(
-        str(hull_integrity), 
+        str(game.get_hull_integrity()), 
         [105, 19], 
-        ui_size, 
-        ui_colour, 
-        ui_font)
+        UI_SIZE, 
+        UI_COLOUR, 
+        UI_FONT)
     canvas.draw_text(
-        str(my_ship.life_forms), 
+        str(my_ship.get_life_forms()), 
         [317, 19], 
-        ui_size, 
-        ui_colour, 
-        ui_font)
+        UI_SIZE, 
+        UI_COLOUR, 
+        UI_FONT)
     canvas.draw_text(
-        str(my_ship.score), 
+        str(my_ship.get_score()), 
         [523, 19], 
-        ui_size, 
-        ui_colour, 
-        ui_font)
+        UI_SIZE, 
+        UI_COLOUR, 
+        UI_FONT)
     canvas.draw_text(
-        str(anomoly_mass), 
+        str(game.get_anomaly_mass()), 
         [690, 19], 
-        ui_size, 
-        ui_colour, 
-        ui_font)
-    if beat_the_game:
-        levels_remaining = 0
+        UI_SIZE, 
+        UI_COLOUR, 
+        UI_FONT)
+    if game.beat_the_game:
+        game.set_levels_remaining(0)
     canvas.draw_text(
-        str(levels_remaining), 
+        str(game.get_levels_remaining()), 
         [398, 590], 
-        ui_size,
-        ui_level_colour, 
-        ui_font)
+        UI_SIZE,
+        UI_LEVEL_COLOUR, 
+        UI_FONT)
 
     # draw the map
     my_map.draw(canvas)
 
     # draw the splash screen
-    if game_is_paused:
+    if game.is_paused:
         canvas.draw_image(
             splash_image, 
             splash_info.get_centre(), 
@@ -1406,26 +1605,26 @@ def draw(canvas):
             CENTRE, 
             splash_info.get_size())
 
-    # check if the user is at the level status screen
-    if at_level_status and not beat_the_game:
+    # draw the level status screen
+    if game.at_level_status and not game.beat_the_game:
         canvas.draw_text(
-            str(my_ship.score), 
+            str(my_ship.get_score()), 
             [435, 333], 
-            status_size, 
-            status_colour, 
-            status_font)
+            STATUS_SIZE, 
+            STATUS_COLOUR, 
+            STATUS_FONT)
 
-    # check if the user is at the beat game screen
-    if beat_the_game:
+    # draw the beat game screen
+    if game.beat_the_game:
         canvas.draw_text(
-            str(total_score), 
+            str(game.get_total_score()), 
             [435, 351], 
-            status_size, 
-            status_colour, 
-            status_font)
+            STATUS_SIZE, 
+            STATUS_COLOUR, 
+            STATUS_FONT)
 
-    # check if the user is starting the game for the first time
-    if first_time:
+    # draw the story screen
+    if game.first_time:
         canvas.draw_image(
             story_image, 
             story_info.get_centre(), 
@@ -1440,6 +1639,8 @@ def draw(canvas):
 # _____________________________________________________________________________
 # _____________________________________________________________________________
 
+# this try/except statement returns a readable response when a known bug in
+# CodeSkulptor occures in Google Chrome.
 try:
     frame = simplegui.create_frame("Rescape", WIDTH, HEIGHT, CTRL_WIDTH)
 except:
@@ -1460,10 +1661,10 @@ except:
 frame.set_draw_handler(draw)
 
 # timers
-main_timer = simplegui.create_timer(main_eh_frequency, main_handler)
-asteroid_timer = simplegui.create_timer(rock_spawner_frequency, rock_spawner)
-music_timer = simplegui.create_timer(music_frequency, play_music)
-victory_timer = simplegui.create_timer(victory_frequency, play_victory)
+main_timer = simplegui.create_timer(MAIN_EH_FREQUENCY, main_handler)
+asteroid_timer = simplegui.create_timer(ROCK_SPAWNER_FREQUENCY, rock_spawner)
+music_timer = simplegui.create_timer(MUSIC_FREQUENCY, play_music)
+victory_timer = simplegui.create_timer(VICTORY_FREQUENCY, play_victory)
 
 # input
 frame.set_keydown_handler(keydown)
@@ -1478,7 +1679,7 @@ frame.set_mouseclick_handler(mouse_click)
 # _____________________________________________________________________________
 
 
-# call new_game to establish variables
+# call new_game with any values above zero to establish my_ship and mothership
 new_game([2, 2], 100, False)
 
 # start timers
