@@ -1,6 +1,6 @@
 #
 # Pocket Universe: Rescape
-# v1.59
+# v1.60
 # A game written in Python for CodeSkulptor.
 # By Chloe Unrau 2013
 # _____________________________________________________________________________
@@ -50,7 +50,7 @@ import random
 # canvas
 WIDTH = 800
 HEIGHT = 600
-CENTRE = [WIDTH / 2, HEIGHT / 2]
+CENTRE = (WIDTH / 2, HEIGHT / 2)
 CTRL_WIDTH = 100
 
 # game
@@ -63,7 +63,7 @@ TELEPORTER_SPEED = 4
 TELEPORTER_LIFESPAN = 20
 TELEPORTER_MAX = 1
 SHIP_ACCELERATION = 0.2
-SHIP_TURN_VEL = 0.1
+SHIP_TURN_VEL = 0.09
 MAX_ASTEROIDS = 5
 MAX_ASTEROID_SPEED = 30
 DEFAULT_FRICTION = 0.02
@@ -87,7 +87,7 @@ UI_LEVEL_COLOUR = "#73badb"
 STATUS_FONT = "monospace"
 STATUS_SIZE = 24
 STATUS_COLOUR = "#ffffff"
-MAP_POS = [20, 51]
+MAP_POS = (20, 51)
 
 
 #
